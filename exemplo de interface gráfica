@@ -1,0 +1,740 @@
+from tkinter import *
+from tkinter import messagebox
+from tkinter.ttk import *
+import datetime
+import os
+import string
+import random
+import time
+import matplotlib.pyplot as plt
+import numpy as np
+from openpyxl import *
+from tkinter import *
+from PIL import ImageTk, Image
+
+# Declaração global do Excel e do GUI
+
+# Abre a planilha do Excel
+
+home = os.path.expanduser('~')
+
+wb = load_workbook("C:\\Users\\sjcrmore\\PycharmProjects\\bdindustrial\\teste.xlsx", data_only=False)
+
+# Cria a planilha dentro do Workbook
+sheet = wb.active
+
+def excel():
+
+    # tamanho das colunas
+    # excel spreadsheet
+    sheet.column_dimensions['A'].width = 30
+    sheet.column_dimensions['B'].width = 10
+    sheet.column_dimensions['C'].width = 10
+    sheet.column_dimensions['D'].width = 20
+    sheet.column_dimensions['E'].width = 20
+    sheet.column_dimensions['F'].width = 40
+    sheet.column_dimensions['G'].width = 50
+    sheet.column_dimensions['H'].width = 50
+    sheet.column_dimensions['I'].widht = 70
+    sheet.column_dimensions['J'].widht = 150
+
+    # Escreve o cabeçalho no Excel
+    # todas na primeira linha, variam a coluna
+
+    sheet.cell(row=1, column=1).value = "Mês"
+    sheet.cell(row=1, column=2).value = "Unidade"
+    sheet.cell(row=1, column=3).value = "Dia"
+    sheet.cell(row=1, column=4).value = "Linha"
+    sheet.cell(row=1, column=5).value = "Hora da Parada"
+    sheet.cell(row=1, column=6).value = "Início da Intervenção"
+    sheet.cell(row=1, column=7).value = "Fim da Intervenção"
+    sheet.cell(row=1, column=8).value = "Hora do Reinício"
+    sheet.cell(row=1, column=9).value = "Observações"
+    sheet.cell(row=1, column=10).value = "Cód. do Motivo"
+    sheet.cell(row=1, column=11).value = "Cadastrado por"
+
+def insert():
+
+
+    unidade_insert = ['SAL1' , 'SAL2', 'FOR2', 'SJC1', 'SJCMI', 'SIF1', 'LON2']
+
+    mes_insert = ['1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9', '10' , '11' , '12']
+
+    linha_insert = ['1','2','3','4','5','6','7','8','9','10','5 Kg Plástico','Far. Vácuo','FER1','FER2','Doméstica',
+              'Indústrial','P.M','M.B','M.D','M.A','1 Kg Plástico','1 Kg Papel','5 Kg Papel']
+
+    dia_insert = ['1', '2' ,'3' ,'4', '5', '6', '7' ,'8', '9' ,'10' ,'11' ,'12' ,'13' ,'14' ,
+                  '15' ,'16' ,'17' ,'18' ,'19' ,'20' ,'21' ,'22' ,'23' ,'24' ,'25' ,'26' ,'27',
+                  '28' ,'29' ,'30', '31']
+
+    if (mes_a.get() in mes_insert and
+        linha_a.get() in linha_insert and
+        unidade.get() in unidade_insert and
+        dia_a.get() in dia_insert):
+
+        current_row = sheet.max_row
+        current_column = sheet.max_column
+
+        sheet.cell(row=current_row + 1, column=1).value = mes_a.get()
+        sheet.cell(row=current_row + 1, column=2).value = unidade.get()
+        sheet.cell(row=current_row + 1, column=3).value = dia_a.get()
+        sheet.cell(row=current_row + 1, column=4).value = linha_a.get()
+        sheet.cell(row=current_row + 1, column=5).value = hora_a.get()+ ":" + min_a.get() + ":00"
+        sheet.cell(row=current_row + 1, column=6).value = hora_b.get()+ ":" + min_b.get() + ":00"
+        sheet.cell(row=current_row + 1, column=7).value = hora_c.get()+ ":" + min_c.get() + ":00"
+        sheet.cell(row=current_row + 1, column=8).value = hora_d.get()+ ":" + min_d.get() + ":00"
+        sheet.cell(row=current_row + 1, column=9).value = inputValue
+        sheet.cell(row=current_row + 1, column=10).value = cod_a.get() + cod_b.get()
+        sheet.cell(row=current_row + 1, column=11).value = usuario_verify.get()
+
+        registered = Tk()
+        registered.title("Registro Realizado")
+        registered.geometry("600x180")
+        registered.wm_attributes("-topmost", 1)
+        registered.resizable(False, False)
+        registered_a = Label(registered, anchor='center', text="Registro realizado com sucesso ! Para visualizar os dados, clique no botão 'Dados' ! \n"
+                                            "Salvando! Espere a janela fechar automaticamente")
+        registered_a.place(x=100, y=70)
+
+        def countdown(count):
+            label = Label(registered, text=count,font = ('Calibri', 12, 'bold'))
+            label.place(x=300, y=150)
+
+            if count > 0:
+                registered.after(1000, countdown, count -1)
+            if count == 0:
+                registered.destroy()
+
+        countdown(2)
+
+        wb.save("C:\\Users\\sjcrmore\\PycharmProjects\\bdindustrial\\teste.xlsx")
+        registered.mainloop()
+
+    else:
+
+        restrict()
+
+    if (mes_a.get() == "" or
+        unidade.get() == "" or
+        dia_a.get() == "" or
+        linha_field.get() == "" or
+        hora_a.get() == "" or
+        min_b.get() == "" or
+       fim_inter_field.get() == "" or
+        h_restart_field.get() == "" or
+        cod_a.get()== ""):
+        empty_error()
+
+def empty_error():
+
+    empty = Tk()
+    empty.title("Atenção")
+    empty.geometry("200x70")
+    empty.wm_attributes("-topmost", 1)
+    empty_label = Label(empty, text="Por favor preencha todos os campos!")
+    empty_label.grid(row=1, column=1)
+    empty_button = Button(empty, text="Entendido", bg="grey", command=empty.destroy)
+    empty_button.grid(row=2, column=1)
+
+def support():
+
+    support = Tk()
+    support.configure(background='light grey')
+    support.title("Registro de Paradas - OEE")
+    support.geometry("50x25")
+
+##usar essa função para que um botão realize duas ações em apenas 1 click
+
+def combine_func(*funcs):
+    def combined_funcs(*args, **kwargs):
+        for f in funcs:
+            f(*args, **kwargs)
+    return combined_funcs
+
+########################################################################################################################
+
+def faq_screen():
+
+    faq_screen = Tk()
+    faq_screen.configure(background='light grey')
+    faq_screen.title("F.A.Q - Registro de Paradas")
+    faq_screen.geometry("1366x768")
+    faq_screen.state("zoomed")
+    faq_screen.resizable(False, False)
+    faq_screen.attributes("-fullscreen", False)  # substitute `Tk` for whatever your `Tk()` object is called
+
+    T = Label(faq_screen, anchor="n", bg="light grey", text="Programa ainda em Desenvolvimento e em testes\n"
+                     "\n"
+                     "Desenvolvido por: Renan Moreira Pereira - Unidade de São José dos Campos - Engenharia Indústrial\n"
+                     "1 - Selecione o mês ( Somente Números)\n"
+                     "2 - Selecione sua Unidade\n"
+                     "3 - Selecione o Dia da parada ( Somente Números)\n"
+                     "4 - Finalize o questionário e clique em 'Enviar'\n"
+                     "\n"
+                     "\n"
+                     "\n"
+                     "\n"
+                     "Contato:\n"
+                     "Email: renanpereira@jmacedo.com.br\n"
+                     "Email: renanrhoads@gmail.com\n"
+                     "Cel.:(12)98812-6367\n"
+                     "Ramal:7608")
+
+    T.config(font=("Courier", 12))
+    T.place(x=250, y=200)
+
+    Version = Label(faq_screen, anchor="e", bg="light grey", text="Versão: InDev 1.10")
+    Version.config(font=("Arial", 12))
+    Version.place(x=250, y=550)
+
+    Close=Button(faq_screen, anchor="w", text="Okay", bg="light grey", command = faq_screen.destroy)
+    Close.place(x=800, y=570)
+
+def start():
+
+    global mes_a
+    global start
+    global h_restart_field
+    global mes_field
+    global unidade_field
+    global dia_field
+    global h_restart_field
+    global linha_field
+    global heading
+    global intervencao_field
+    global fim_inter_field
+    global hora_parada_field
+    global cod_motivo_field
+    global start
+    global usuario_verify
+    global unidade_menu
+    global unidade
+    global dia_a
+    global hora_a
+    global min_a
+    global hora_b
+    global min_b
+    global cod_a
+    global cod_b
+    global linha_a
+
+    start = Toplevel()
+
+    start.configure(background='light grey')
+
+    start.title("Registro de Paradas - OEE")
+
+    start.geometry("850x600")
+
+    start.resizable(False, False)
+
+    #relógio simples
+    def clock():
+
+        hour = datetime.datetime.now().strftime("%d/%m/%y   -  %H:%M:%S - %p")
+        relogio.config(text = hour)
+        relogio.after(1000, clock)
+
+    relogio = Label(start, font = ('Calibri', 12, 'bold'), bg="light grey")
+    relogio.place(x=650, y=570)
+    clock()
+
+########################################################################################################################
+
+    #Auxiliar de coordenadas
+    def motion(event):
+        x, y = event.x, event.y
+        print('x={}, y={}'.format(x, y))
+
+    start.bind('<Button-1>', motion)
+
+    excel()
+
+    # Cria um formulário
+
+    UNIDADES = ["SAL1", "FOR2", "SJC1", "SIF1", "LON2", "SJCMI","SAL2"]
+
+    DIAS = ['1', '2' ,'3' ,'4', '5', '6', '7' ,'8', '9' ,'10' ,'11' ,'12' ,'13' ,'14' ,
+            '15' ,'16' ,'17' ,'18' ,'19' ,'20' ,'21' ,'22' ,'23' ,'24' ,'25' ,'26' ,'27',
+            '28' ,'29' ,'30', '31']
+
+    MESES = ['1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9', '10' , '11' , '12']
+
+    HORAS = ['00','01', '02' ,'03' ,'04', '05', '06', '07' ,'08', '09' ,'10' ,'11' ,'12' ,'13' ,'14' ,
+            '15' ,'16' ,'17' ,'18' ,'19' ,'20' ,'21' ,'22' ,'23']
+
+    MINUTOS = ['00','01', '02', '03', '04', '05',  '06',  '07',  '08',
+               '09', '10', '11', '12', '13', '14', '15', '16',
+               '17', '18', '19', '20', '21', '22', '23', '24',
+               '25', '26', '27', '28', '29', '30', '31', '32',
+               '33', '34', '35', '36', '37', '38', '39', '40',
+               '41', '42', '43', '44', '45', '46', '47', '48',
+               '49', '50', '51', '52', '53', '54', '55', '56',
+               '57', '58', '59']
+
+    MOTIVOS = ['E','M','GE','C','GR','F','N','D','L','Q','G','pU','pM','pE','pO','P','O','S','U','MP']
+
+    MOTIVOS_N = ['01', '02', '03', '04', '05',  '06',  '07',  '08',
+               '09', '10', '11', '12', '13', '14', '15', '16',
+               '17', '18', '19', '20', '21', '22', '23', '24',
+               '25', '26', '27', '28', '29', '30']
+
+    LINHAS = ['1','2','3','4','5','6','7','8','9','10','5 Kg Plástico','Far. Vácuo','FER1','FER2','Doméstica',
+              'Indústrial','P.M','M.B','M.D','M.A','1 Kg Plástico','1 Kg Papel','5 Kg Papel']
+
+    usuario = usuario_verify
+    senha = senha_verify.get()
+
+    #USUARIO LABEL
+
+    user = Label(start, text="Usuário: " + str(usuario.get()),font=("Arial", 10, 'bold'), bg="light grey")
+    user.place(x=15, y=570)
+
+    #MENU UNIDADE
+
+
+    unidade = StringVar(start)
+    unidade.set(UNIDADES[0])
+    unidade_menu = OptionMenu(start, unidade, *UNIDADES)
+    unidade_menu.place(x=280, y=20)
+    unidade_label = Label(start, text="Selecione sua unidade", bg="light grey")
+    unidade_label.place(x=100, y=25)
+
+
+    #MENU DIA
+
+    dia_a = StringVar(start)
+    dia_a.set(DIAS[0])
+    dia_menu = OptionMenu(start, dia_a, *DIAS)
+    dia_menu.place(x=280, y=80)
+    dia = Label(start, text="Dia", bg="light grey")
+    dia.place(x=200, y=85)
+
+    #MENU LINHA
+
+
+    linha_a = StringVar(start)
+    linha_a.set(LINHAS[0])
+    linha_menu = OptionMenu(start, linha_a, *LINHAS)
+    linha_menu.place(x=280, y=110)
+    linha_menu_label = Label(start, text="Linha", bg="light grey")
+    linha_menu_label.place(x=200, y=110)
+
+
+    #MENU MES
+
+
+    mes_a = StringVar(start)
+    mes_a.set(MESES[0])
+    mes_menu = OptionMenu(start, mes_a, *MESES)
+    mes_menu.place(x=280, y=50)
+    mes = Label(start, text="Mês", bg="light grey")
+    mes.place(x=200, y=55)
+
+
+    #MENU HORA DA PARADA
+
+
+    hora_a = StringVar(start)
+    hora_a.set(HORAS[0])
+    hora_parada_menu = OptionMenu(start, hora_a, *HORAS)
+    hora_parada_menu.place(x=225, y=140)
+    hora_parada = Label(start, text="Hora de parada", bg="light grey")
+    hora_parada.place(x=135, y=140)
+    min_a = StringVar(start)
+    min_a.set(MINUTOS[0])
+    min_parada_menu = OptionMenu(start, min_a, *MINUTOS)
+    min_parada_menu.place(x=330, y=140)
+    min_parada = Label(start, text="Min:", bg="light grey")
+    min_parada.place(x=300, y=140)
+
+
+    #MENU INICIO DE INTERVENÇÃO
+
+
+    hora_b = StringVar(start)
+    hora_b.set(HORAS[0])
+    hora_inter_menu = OptionMenu(start, hora_b, *HORAS)
+    hora_inter_menu.place(x=225, y=170)
+    hora_inter = Label(start, text="Início de Intervenção", bg="light grey")
+    hora_inter.place(x=110, y=170)
+    min_b = StringVar(start)
+    min_b.set(MINUTOS[0])
+    min_inter_menu = OptionMenu(start, min_b, *MINUTOS)
+    min_inter_menu.place(x=330, y=170)
+    min_inter = Label(start, text="Min:", bg="light grey")
+    min_inter.place(x=300, y=170)
+
+
+    #MENU FIM INTERVENÇÃO
+
+    global hora_c
+    global min_c
+
+    hora_c = StringVar(start)
+    hora_c.set(HORAS[0])
+    hora_fim_menu = OptionMenu(start, hora_c, *HORAS)
+    hora_fim_menu.place(x=225, y=200)
+    hora_fim = Label(start, text="Fim de Intervenção", bg="light grey")
+    hora_fim.place(x=115, y=200)
+
+    min_c = StringVar(start)
+    min_c.set(MINUTOS[0])
+    min_fim_menu = OptionMenu(start, min_c, *MINUTOS)
+    min_fim_menu.place(x=330, y=200)
+    min_fim = Label(start, text="Min:", bg="light grey")
+    min_fim.place(x=300, y=200)
+
+    #MENU COD. MOTIVO
+
+    global cod_a
+    global cod_b
+
+    cod_a = StringVar(start)
+    cod_a.set(MOTIVOS[0])
+    cod_menu = OptionMenu(start, cod_a, *MOTIVOS)
+    cod_menu.place(x=225, y=260)
+    cod = Label(start, text="Cód. Motivo", bg="light grey")
+    cod.place(x=150, y=260)
+
+    #MENU COD. MOTIVO 2 PARTE
+    cod_b = StringVar(start)
+    cod_b.set(MOTIVOS_N[0])
+    cod_menu2 = OptionMenu(start, cod_b, *MOTIVOS_N)
+    cod_menu2.place(x=280, y=260)
+
+    #MENU REINICIO
+
+    global hora_d
+    global min_d
+
+    hora_d = StringVar(start)
+    hora_d.set(HORAS[0])
+    hora_restart_menu = OptionMenu(start, hora_d, *HORAS)
+    hora_restart_menu.place(x=225, y=230)
+    hora_restart = Label(start, text="Hora de Reinício", bg="light grey")
+    hora_restart.place(x=130, y=230)
+
+    min_d = StringVar(start)
+    min_d.set(MINUTOS[0])
+    min_rest_menu = OptionMenu(start, min_d, *MINUTOS)
+    min_rest_menu.place(x=330, y=230)
+    min_rest = Label(start, text="Min:", bg="light grey")
+    min_rest.place(x=300, y=230)
+
+    #MENU DE OBSERVAÇÕES
+
+    global inputValue
+    global obs
+
+    obs = Text(start)
+    obs.place(x=266, y=310, width=250, height=150)
+    #obs.delete(0, END)
+    obs_label = Label(start, text="Descrição da parada (Operador) ", bg="light grey")
+    obs_label.place(x=90, y=300)
+    inputValue = obs.get("1.0","end-1c")
+
+########################################################################################################################
+
+    linha = Label(start, text="Linha", bg="light grey")
+
+    submit = Button(start, text="Enviar", fg="Black",bg="light Blue", command=insert, width="19", height="2", font=("Calibri", 12, 'bold'))
+    submit.place(x=225, y=500)
+
+    user_switch = PhotoImage(file="user.png")
+    user_logout = Button(start, text="Alternar usuários", bg="light grey", image=user_switch, command=combine_func(destroy_windows, restart ))
+    user_logout.place(x=730, y=20)
+    user_label = Label(start, text="Alternar Usuário",font=("Arial", 10, 'bold'), bg="light grey")
+    user_label.place(x=620, y=45)
+
+    photo = PhotoImage(file="folder.png")
+    OpenExcel = Button(start,image=photo, bg="light grey", command=open_file, width="64", height="64")
+    OpenExcel.place(x=730, y=91)
+    excel_label= Label(start, text="Dados", bg="light grey")
+    excel_label.place(x=690, y=116)
+
+    chart_img = PhotoImage(file="chart.png")
+    chartButton = Button(start, command=combine_func(chart, warning), text="Gráfico", image=chart_img , bg="light grey")
+    chartButton.place(x=730, y=161)
+    chart_label= Label(start, text="Gráficos", bg="light grey")
+    chart_label.place(x=680, y=186)
+
+    #j_logo = PhotoImage(file="jmacedo.png")
+    #logo_button = Label(start, image=j_logo , bg="light grey")
+    #logo_button.place(x=420, y=300)//
+
+    exit_img = PhotoImage(file="exit.png")
+    sair = Button(start, text="Logout", fg="Black",image=exit_img, bg="light grey", command=start.destroy)
+    sair.place(x=730, y=231)
+    sair_label = Label(start, text="Logout", bg="light grey")
+    sair_label.place(x=685, y=256)
+
+
+    faq_img = PhotoImage(file="problem.png")
+    faq = Button(start,image=faq_img, bg="light grey", command=faq_screen)
+    faq.place(x=730, y=301)
+    faq_label = Label(start, text="FAQ", bg="light grey")
+    faq_label.place(x=700, y=325)
+
+    start.mainloop()
+
+def warning():
+
+    warn = Tk()
+
+    warn.configure(background='light grey')
+
+    warn.title("ATENÇÃO, todos os valores devem ser atualizados manualmente e sem fórmula")
+
+    warn.geometry("200x150")
+
+    warn.resizable(False, False)
+
+    warn.mainloop()
+
+def chart():
+
+    wb.save("C:\\Users\\sjcrmore\\PycharmProjects\\bdindustrial\\teste.xlsx")
+
+    l2 = sheet['L2']
+    m2 = sheet['M2']
+    n2 = sheet['N2']
+    o2 = sheet['O2']
+    p2 = sheet['P2']
+    q2 = sheet['Q2']
+    r2 = sheet['R2']
+
+    objects = ('SJC1', 'SIF1', 'SJCMI', 'FOR2', 'LON2', 'SAL2', 'SAL1')
+
+    y_pos = np.arange(len(objects))
+
+    performance = [l2.value, m2.value, n2.value, o2.value, p2.value, q2.value, r2.value]
+
+    plt.bar(y_pos, performance, align='center', alpha=1.0)
+    plt.xticks(y_pos, objects)
+    plt.ylabel('Quebras')
+    plt.title('Número de Quebras por Unidade (M & E)')
+    plt.show()
+
+def restart():
+
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
+
+def destroy_windows():
+
+    start.destroy()
+
+def open_file():
+
+    os.startfile('C:\\Users\\sjcrmore\\PycharmProjects\\bdindustrial\\teste.xlsx')
+
+def restrict():
+
+    unidade_lista = ['SAL1', 'FOR2', 'LON2', 'SAL2', 'SJC1', 'SJCMI']
+
+    dia_lista = ['1', '2' ,'3' ,'4', '5', '6', '7' ,'8', '9' ,'10' ,'11' ,'12' ,'13' ,'14' ,
+                  '15' ,'16' ,'17' ,'18' ,'19' ,'20' ,'21' ,'22' ,'23' ,'24' ,'25' ,'26' ,'27',
+                  '28' ,'29' ,'30', '31']
+
+    mes_lista = ['1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , '10' , '11' , '12' ]
+
+    if mes_a.get not in mes_lista:
+        error4 = Tk()
+        error4.configure(background='light grey')
+        error4.title("ERRO")
+        error4.wm_attributes("-topmost", 1)
+        error4.geometry("275x50")
+        error4_label = Label(error4, text="Favor verificar a entrada MÊS")
+        error4_label.grid(row=0, column=1)
+        error4_button = Button(error4, text="Ok", fg="Black", command=error4.destroy)
+        error4_button.grid(row=1, column=1)
+
+    if dia_a.get not in dia_lista:
+        error5 = Tk()
+        error5.wm_attributes("-topmost", 1)
+        error5.configure(background='light grey')
+        error5.title("ERRO")
+        error5.geometry("275x50")
+        error5_label = Label(error5, text="Favor verificar a entrada DIA")
+        error5_label.grid(row=0, column=1)
+        error5_button = Button(error5, text="Ok", fg="Black", command=error5.destroy)
+        error5_button.grid(row=1, column=1)
+
+def returnhome():
+
+    start.destroy()
+    login2()
+
+def login2():
+    from main import login
+    login()
+
+def registro():
+
+    global excel
+    global usuario
+    global senha
+    global usuario_entry
+    global senha_entry
+    global register_screen
+    global usuario
+
+    register_screen = Toplevel()
+    register_screen.title("Registrar-se")
+    register_screen.geometry("400x400")
+
+    usuario = StringVar()
+    senha = StringVar()
+    Label(register_screen, text="Coloque as informações necessárias", bg="white").pack()
+    Label(register_screen, text="").pack()
+
+    usuario_label = Label(register_screen, text="Usuario *")
+    usuario_label.pack()
+
+    usuario_entry = Entry(register_screen, textvariable=usuario)
+    usuario_entry.pack()
+
+    senha_label = Label(register_screen, text="Senha *")
+    senha_label.pack()
+
+    senha_entry = Entry(register_screen, textvariable=senha, show='*')
+    senha_entry.pack()
+
+    Label(register_screen, text="").pack()
+
+    Button(register_screen, text="Registrar", width=10, height=1, bg="white", command=cadastro_usuario).pack()
+
+def cadastro_usuario():
+
+    global usuario_info
+   global senha_info
+
+    usuario_info = usuario.get()
+    senha_info = senha.get()
+
+    file = open(usuario_info, "w")
+
+    file.write(usuario_info + "\n")
+    file.write(senha_info)
+    file.close()
+
+    usuario_entry.delete(0, END)
+    senha_entry.delete(0, END)
+    Label(register_screen, text="Registrado com sucesso!", fg="green", font=("Calibri", 11)).pack()
+    Label(register_screen, text="Feche esta janela", fg="blue", font=("Calibri", 11)).pack()
+
+def login_main():
+
+    global login_main_screen
+
+    login_main_screen = Toplevel()
+    login_main_screen.geometry("300x250")
+    login_main_screen.title("Faça Login em sua conta")
+    Label(login_main_screen, text="Por Favor, coloque seus dados abaixo").pack()
+    Label(login_main_screen, text="").pack()
+
+    global usuario_verify
+    global senha_verify
+
+    usuario_verify = StringVar()
+    senha_verify = StringVar()
+
+    Label(login_main_screen, text="Usuário *").pack()
+    usuario_login_entry = Entry(login_main_screen, textvariable=usuario_verify)
+    usuario_login_entry.pack()
+
+    Label(login_main_screen, text="").pack()
+    Label(login_main_screen, text="Senha *").pack()
+
+    senha_login_entry = Entry(login_main_screen, show='*', textvariable=senha_verify)
+    senha_login_entry.pack()
+    Label(login_main_screen, text="").pack()
+    Button(login_main_screen, text="Login", width=10, height=1, command=login_verification).pack()
+
+def login_verification():
+
+    login_verify()
+
+def login_verify():
+
+    global login_verify
+
+    usuario = usuario_verify.get()
+    senha = senha_verify.get()
+    list_of_files = os.listdir()
+
+    if usuario in list_of_files and senha in list_of_files:
+        file = open(usuario, "r")
+        verify = file.read().splitlines()
+        login_success()
+    else:
+        password_error()
+
+def login_success():
+
+    global login_success_screen
+
+    login_success_screen = Toplevel()
+    login_success_screen.title("Login")
+    login_success_screen.geometry("200x200")
+    Label(login_success_screen, text="Login efetuado com sucesso").pack()
+    Button(login_success_screen, text="OK", command=delet_login_success).pack()
+
+    start()
+
+def delet_login_success():
+
+    login_success_screen.destroy()
+    login_main_screen.destroy()
+    login_screen.withdraw()
+
+def password_error():
+
+    global password_error
+
+    global password_error_screen
+    password_error_screen = Toplevel()
+    password_error_screen.title("Erro")
+    password_error_screen.geometry("150x100")
+    Label(password_error_screen, text="Senha inválida").pack()
+    Button(password_error_screen, text="Ok", command=delete_password_error).pack()
+
+def delete_password_error():
+
+    password_error_screen.destroy()
+
+def user_error():
+
+    global user_error
+
+    global user_error_screen
+    user_error_screen = Toplevel()
+    user_error_screen.title("Erro")
+    user_error_screen.geometry("150x100")
+    Label(user_error_screen, text="usuário inválido").pack()
+    Button(user_error_screen, text="Ok", command=delete_user_error).pack()
+
+def delete_user_error():
+
+    user_error_screen.destroy()
+
+def login():
+
+
+    global login_screen
+    #Cria a tela de Login
+    login_screen = Tk()
+    login_screen.geometry('400x400')
+    login_screen.title("Login")
+    Label(text="Faça seu Login, ou registre-se agora", bg ="white", width="30").pack()
+    Label(text="").pack()
+    Button(text="Login", height="2", width="30", command=login_main).pack()
+    Label(text="").pack()
+    Button(text="Registrar-se", height="2", width="30", command=registro).pack()
+    login_screen.iconbitmap(r'C:\Users\sjcrmore\PycharmProjects\bdindustrial\j.ico')
+    login_screen.mainloop()
+
+########################################################################################################################
+
+login()
